@@ -279,7 +279,7 @@ button::after { border: none; }
 .border-b-light { border-bottom: 2rpx solid #F9FAFB; }
 .border-b-dash { border-bottom: 2rpx dashed #E5E7EB; }
 .border-t-dash { border-top: 2rpx dashed #E5E7EB; }
-/* 🔹新增：圆角工具类，用在退出登录按钮 */
+/* 新增：圆角工具类，用在退出登录按钮 */
 .rounded-lg { border-radius: 24rpx; }
 
 .shadow-sm { box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03); }
