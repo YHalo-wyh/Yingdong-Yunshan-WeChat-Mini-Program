@@ -40,7 +40,7 @@ Page({
     icons: {
       "camera_logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTQuNSA0aC01TDcgN0g0YTIgMiAwIDAgMC0yIDJ2OWEyIDIgMCAwIDAgMiAyaDE2YTIgMiAwIDAgMCAyLTJWOWEyIDIgMCAwIDAtMi0yaC0zbC0yLjUtM3oiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEzIiByPSIzIi8+PC9zdmc+",
       "search": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNCRkRCRkUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI4Ii8+PHBhdGggZD0ibTIxIDIxLTQuMy00LjMiLz48L3N2Zz4=",
-      // ✅ 新增：搜索空状态用的浅色图标
+      // 搜索空状态用的浅色图标
       "search_gray": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNCRkRCRkUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI4Ii8+PHBhdGggZD0ibTIxIDIxLTQuMy00LjMiLz48L3N2Zz4=",
       "x_white": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTggNiA2IDE4Ii8+PHBhdGggZD0ibTYgNiAxOCAxMiIvPjwvc3ZnPg==",
       "x_gray": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTggNiA2IDE4Ii8+PHBhdGggZD0ibTYgNiAxOCAxMiIvPjwvc3ZnPg==",
@@ -576,7 +576,7 @@ Page({
     this.setData({ showAboutModal: false });
   },
 
-  // ✅ 检查：已登录 + 已完善资料，否则弹出对应弹窗
+  //  检查：已登录 + 已完善资料，否则弹出对应弹窗
   ensureUserReady() {
     if (!this.data.isLogged) {
       this.showLoginModal();
@@ -614,7 +614,7 @@ Page({
     });
   },
 
-  // ✅ 保存个人资料：必填 + 写入本地“数据库”，并同步到 userInfo.name
+  //  保存个人资料：必填 + 写入本地“数据库”，并同步到 userInfo.name
   saveProfile() {
     const p = this.data.profile || {};
     if (!p.studentId || !p.name || !p.college) {
@@ -677,7 +677,7 @@ Page({
     }, 800);
   },
 
-  // ✅ 配合 index.wxml 里 open-type="chooseAvatar"
+  //  配合 index.wxml 里 open-type="chooseAvatar"
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail || {};
 
@@ -765,7 +765,7 @@ Page({
       // isProfileComplete: false
     });
 
-    // ⚠️ 不再把本地“数据库”里的用户记录删掉，
+    //  不再把本地“数据库”里的用户记录删掉，
     // 这样下次用同一个微信登录时还能读到之前的资料
     // wx.removeStorageSync('ydys_user');
 
