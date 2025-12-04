@@ -1,0 +1,835 @@
+<view class="container">
+  <!-- 顶部导航 -->
+  <view class="custom-nav" style="height: {{navHeight}}px; padding-top: {{statusBarHeight}}px;">
+    <view class="nav-body" style="height: {{navBodyHeight}}px;">
+        <view class="nav-left" bindtap="goHome">
+            <view class="logo-box"><image src="{{icons.camera_logo}}" class="icon-sm"></image></view>
+            <text class="app-name">影动云山</text>
+        </view>
+        <view class="nav-center search-wrapper">
+            <image src="{{icons.search}}" class="search-icon"></image>
+            <input class="search-inp" placeholder="搜索服务/器材..." placeholder-class="ph-style" value="{{searchQuery}}" bindinput="onSearchInput" />
+            <view wx:if="{{searchQuery}}" class="clear-btn" catchtap="clearSearch"><image src="{{icons.x_white}}" class="icon-xs"></image></view>
+        </view>
+    </view>
+  </view>
+  
+  <scroll-view scroll-y class="main-scroll" scroll-top="{{scrollTop}}" enable-back-to-top>
+    
+    <!-- 搜索结果 -->
+    <block wx:if="{{searchQuery}}">
+      <view style="height: {{navHeight}}px; width: 100%;"></view>
+      <view class="p-4 fade-in">
+        <view class="flex-between mb-4">
+          <text class="title-lg">搜索结果 ({{searchResults.length}})</text>
+          <view class="text-link" bindtap="clearSearch">清除</view>
+        </view>
+        <view wx:if="{{searchResults.length === 0}}" class="empty-state">
+           <image src="{{icons.search_gray}}" class="icon-xxl opacity-20 mb-2"></image>
+           <text class="text-gray">未找到相关内容</text>
+        </view>
+        <view class="grid-2">
+           <block wx:for="{{searchResults}}" wx:key="id">
+             <template is="card" data="{{item, icons}}"/>
+           </block>
+        </view>
+      </view>
+    </block>
+
+    <!-- 首页 -->
+    <block wx:elif="{{activeTab === 'home'}}">
+      <view style="height: {{navHeight}}px; width: 100%;"></view>
+      <view class="pb-safe-area fade-in">
+        <view class="banner m-4 shadow-lg" bindtap="switchToServices">
+           <view class="banner-inner">
+              <text class="banner-t1">记录校园 青春定格</text>
+              <view class="banner-t2">毕业季套餐限时 <text class="highlight">8折</text> 优惠</view>
+              <button class="btn-pill">立即预约</button>
+           </view>
+           <view class="dec-circle c1"></view><view class="dec-circle c2"></view>
+        </view>
+
+        <view class="grid-4 px-4 mb-4">
+           <view class="entry-btn" bindtap="switchToServices">
+             <view class="icon-box bg-blue-50"><image src="{{icons.cat_1}}" class="icon-md"></image></view>
+             <text>摄影预约</text>
+           </view>
+           <view class="entry-btn" bindtap="switchToRentals">
+             <view class="icon-box bg-orange-50"><image src="{{icons.cat_2}}" class="icon-md"></image></view>
+             <text>器材租赁</text>
+           </view>
+           <view class="entry-btn" bindtap="switchToRentalsCostume">
+             <view class="icon-box bg-purple-50"><image src="{{icons.cat_3}}" class="icon-md"></image></view>
+             <text>服装道具</text>
+           </view>
+           <view class="entry-btn" bindtap="openGallery">
+             <view class="icon-box bg-pink-50"><image src="{{icons.cat_4}}" class="icon-md"></image></view>
+             <text>客片画廊</text>
+           </view>
+        </view>
+
+        <view class="flex-between px-4 mb-2">
+           <view class="flex-center">
+             <view class="v-bar"></view>
+             <text class="title-lg">热门推荐</text>
+           </view>
+           <view class="more-link" bindtap="switchToServices">
+             查看全部 <image src="{{icons.chevron_right}}" class="icon-xs"></image>
+           </view>
+        </view>
+        <view class="grid-2 px-4 mb-6">
+           <block wx:for="{{services}}" wx:if="{{index < 4}}" wx:key="id">
+             <template is="card" data="{{item, icons}}"/>
+           </block>
+        </view>
+
+        <view class="px-4 mb-6">
+           <view class="adv-card">
+              <text class="adv-head">为什么选择影动云山？</text>
+              <view class="adv-items">
+                 <view class="adv-row">
+                   <view class="icon-bg bg-green-50"><image src="{{icons.shield}}" class="icon-sm"></image></view>
+                   <view>
+                     <text class="adv-t1">官方认证摄影师</text>
+                     <text class="adv-t2">校团委官方及校摄影协会认证，更懂校园美景与机位。</text>
+                   </view>
+                 </view>
+                 <view class="adv-row">
+                   <view class="icon-bg bg-blue-50"><image src="{{icons.clock}}" class="icon-sm"></image></view>
+                   <view>
+                     <text class="adv-t1">极速出片</text>
+                     <text class="adv-t2">拍完48小时交付精修，证件照立等可取。</text>
+                   </view>
+                 </view>
+                 <view class="adv-row">
+                   <view class="icon-bg bg-orange-50"><image src="{{icons.map_orange}}" class="icon-sm"></image></view>
+                   <view>
+                     <text class="adv-t1">校内极速取还</text>
+                     <text class="adv-t2">食堂/宿舍楼下设有服务点，免去奔波。</text>
+                   </view>
+                 </view>
+              </view>
+           </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 约拍 -->
+    <block wx:elif="{{activeTab === 'services'}}">
+       <view class="pb-safe-area fade-in">
+          <view style="height: {{navHeight}}px; width: 100%;"></view>
+          <scroll-view scroll-x class="tab-scroll sticky-sub" enable-flex style="top: calc({{navHeight}}px - 2px)">
+             <block wx:for="{{serviceTabs}}" wx:key="*this">
+                <view class="tab-pill {{activeServiceTab === item ? 'active' : ''}}" bindtap="setServiceTab" data-tab="{{item}}">{{item}}</view>
+             </block>
+          </scroll-view>
+          <view class="grid-2 p-4">
+            <block wx:for="{{filteredServices}}" wx:key="id">
+              <template is="card" data="{{item, icons}}"/>
+            </block>
+          </view>
+       </view>
+    </block>
+
+    <!-- 租赁 -->
+    <block wx:elif="{{activeTab === 'rentals'}}">
+       <view class="pb-safe-area fade-in">
+          <view style="height: {{navHeight}}px; width: 100%;"></view>
+          <view class="sticky-sub p-4 pb-2 bg-glass" style="top: calc({{navHeight}}px - 2px)">
+             <view class="toggle-wrap">
+                <view class="toggle-btn {{rentalType === 'equipment' ? 'on-blue' : ''}}" bindtap="setRentalType" data-type="equipment">摄影器材</view>
+                <view class="toggle-btn {{rentalType === 'costumes' ? 'on-pink' : ''}}" bindtap="setRentalType" data-type="costumes">服装道具</view>
+             </view>
+          </view>
+          <view class="px-4 py-2">
+            <block wx:for="{{currentRentals}}" wx:key="id">
+              <template is="rental-row" data="{{item, icons}}"/>
+            </block>
+          </view>
+       </view>
+    </block>
+
+    <!-- 个人中心 -->
+    <block wx:elif="{{activeTab === 'profile'}}">
+       <view class="pb-safe-area fade-in">
+          <view class="profile-header">
+             <view class="bg-layer"></view><view class="dec-layer"></view>
+             <view class="pf-content" style="padding-top: {{navHeight + 20}}px;">
+                <view class="user-row mb-6">
+                   <!-- 头像 -->
+                   <block wx:if="{{isLogged}}">
+                     <view class="avatar-ring" bindtap="changeAvatar">
+                        <image src="{{userInfo.avatar}}" class="icon-xl" mode="aspectFill"></image>
+                        <view class="edit-badge">
+                          <image src="{{icons.camera_add}}" class="icon-xs"></image>
+                        </view>
+                     </view>
+                   </block>
+                   <block wx:else>
+                     <view class="avatar-ring" bindtap="showLoginModal">
+                        <image src="{{userInfo.avatar}}" class="icon-xl" mode="aspectFill"></image>
+                     </view>
+                   </block>
+
+                   <!-- 名字区域 -->
+                   <block wx:if="{{isLogged}}">
+                     <view class="user-info" bindtap="openProfileEditor">
+                        <view class="flex-center mb-1">
+                          <text class="u-name">{{userInfo.name}}</text>
+                          <text class="tag-auth">已认证</text>
+                        </view>
+                        <view class="flex-center text-blue-100 text-xs">
+                          <image src="{{icons.shield_white}}" class="icon-xs mr-1"></image>信誉分: 680 (免押金)
+                        </view>
+                     </view>
+                   </block>
+                   <block wx:else>
+                     <view class="user-info" bindtap="showLoginModal">
+                        <view class="flex-center mb-1"><text class="u-name">未登录</text></view>
+                        <view class="text-blue-100 text-xs">点击登录获取更多服务</view>
+                     </view>
+                   </block>
+                   
+                   <!-- 设置按钮 -->
+                   <view class="set-btn" bindtap="openSettings">
+                       <image src="{{icons.settings}}" class="icon-md"></image>
+                   </view>
+                </view>
+                
+                <view class="stats-bar">
+                   <view class="stat-item" bindtap="openOrderList" data-status="待付款">
+                     <text class="stat-n">{{countPending}}</text><text class="stat-l">待付款</text>
+                   </view>
+                   <view class="stat-item" bindtap="openOrderList" data-status="进行中">
+                     <text class="stat-n">{{countProcessing}}</text><text class="stat-l">进行中</text>
+                   </view>
+                   <view class="stat-item" bindtap="openMyCoupons">
+                     <text class="stat-n">{{myCoupons.length}}</text><text class="stat-l">优惠券</text>
+                   </view>
+                   <view class="stat-item" bindtap="showToast" data-msg="当前积分: 120">
+                     <text class="stat-n">{{isLogged?120:0}}</text><text class="stat-l">积分</text>
+                   </view>
+                </view>
+             </view>
+          </view>
+
+          <view class="profile-body px-4">
+             <view class="menu-card shadow-sm">
+                <template is="menu-item" data="{{icon: icons.m_order, label: '全部订单', arrow: icons.chevron_right, action: 'openAllOrders'}}"/>
+                <template is="menu-item" data="{{icon: icons.m_star, label: '我的收藏', arrow: icons.chevron_right, action: 'openFavorites'}}"/>
+                <template is="menu-item" data="{{icon: icons.m_info, label: '个人资料', arrow: icons.chevron_right, action: 'openProfileEditor'}}"/>
+                <template is="menu-item" data="{{icon: icons.m_pin, label: '常用地址', arrow: icons.chevron_right, action: 'editAddress', val: userInfo.address}}"/>
+                <template is="menu-item" data="{{icon: icons.m_wallet, label: '我的钱包', arrow: icons.chevron_right, action: 'openWallet', msg: '余额: ' + balance}}"/>
+             </view>
+
+             <view class="menu-card shadow-sm mt-4 p-4">
+                <text class="title-sm mb-3 block">更多服务</text>
+                <view class="grid-4 text-center">
+                   <view class="srv-item" bindtap="contactSupport">
+                     <view class="circle bg-blue-50 text-blue"><image src="{{icons.phone}}" class="icon-sm"></image></view>
+                     <text>联系客服</text>
+                   </view>
+                   <view class="srv-item" bindtap="openCouponCenter">
+                     <view class="circle bg-red-50 text-red"><image src="{{icons.m_gift}}" class="icon-sm"></image></view>
+                     <text>领券中心</text>
+                   </view>
+                   <view class="srv-item" bindtap="openHelpCenter">
+                     <view class="circle bg-yellow-50 text-yellow"><image src="{{icons.m_help}}" class="icon-sm"></image></view>
+                     <text>帮助中心</text>
+                   </view>
+                   <view class="srv-item" bindtap="openAbout">
+                     <view class="circle bg-gray-50 text-gray"><image src="{{icons.m_info}}" class="icon-sm"></image></view>
+                     <text>关于我们</text>
+                   </view>
+                </view>
+             </view>
+             <view class="ver-text">影动云山 v1.0.2</view>
+          </view>
+       </view>
+    </block>
+  </scroll-view>
+
+  <!-- TabBar -->
+  <view class="tabbar">
+     <view class="tab-btn {{activeTab==='home'?'on':''}}" bindtap="switchTab" data-tab="home">
+       <image src="{{activeTab==='home'?icons.home_active:icons.home}}" class="tab-icon"></image><text>首页</text>
+     </view>
+     <view class="tab-btn {{activeTab==='services'?'on':''}}" bindtap="switchTab" data-tab="services">
+       <image src="{{activeTab==='services'?icons.cam_tab_active:icons.cam_tab}}" class="tab-icon"></image><text>约拍</text>
+     </view>
+     <view class="tab-btn {{activeTab==='rentals'?'on':''}}" bindtap="switchTab" data-tab="rentals">
+       <image src="{{activeTab==='rentals'?icons.bag_active:icons.bag}}" class="tab-icon"></image><text>租赁</text>
+     </view>
+     <view class="tab-btn {{activeTab==='profile'?'on':''}}" bindtap="switchTab" data-tab="profile">
+       <image src="{{activeTab==='profile'?icons.user_active:icons.user}}" class="tab-icon"></image><text>我的</text>
+     </view>
+  </view>
+
+  <!-- 浮动购物车 -->
+  <view wx:if="{{cartItems.length > 0 && activeTab !== 'profile'}}" class="float-cart shadow-xl animate-bounce" bindtap="openCart">
+     <image src="{{icons.bag_white}}" class="icon-lg"></image>
+     <view class="cart-badge">{{cartItems.length}}</view>
+  </view>
+
+  <!-- 1. 购物车弹窗 -->
+  <view wx:if="{{isCartOpen}}" class="modal-mask fade-in" bindtap="closeCart">
+     <view class="bottom-sheet slide-up" catchtap="dummy">
+        <view class="sheet-head border-b">
+           <view class="flex-center">
+             <image src="{{icons.bag_blue}}" class="icon-md mr-2"></image>
+             <text class="title-lg">购物车</text>
+             <text class="badge-pill">{{cartItems.length}}</text>
+           </view>
+           <view class="close-btn" bindtap="closeCart"><image src="{{icons.x_gray}}" class="icon-md"></image></view>
+        </view>
+        <scroll-view scroll-y class="sheet-body">
+           <block wx:if="{{cartItems.length === 0}}">
+              <view class="empty-state">
+                <image src="{{icons.bag}}" class="icon-xl opacity-20 filter-gray mb-2"></image>
+                <text class="text-gray">购物车是空的</text>
+              </view>
+           </block>
+           <block wx:else>
+              <view class="p-3">
+                  <block wx:for="{{cartItems}}" wx:key="uniqueId">
+                     <view class="cart-item">
+                        <image src="{{item.imageUrl}}" mode="aspectFill" class="cart-thumb"></image>
+                        <view class="cart-info">
+                           <view>
+                             <text class="item-title">{{item.title || item.name}}</text>
+                             <text class="item-desc">{{item.type || item.category}}</text>
+                             <!-- 购物车里暂时不展示预约信息，有需要再加 -->
+                           </view>
+                           <view class="flex-between">
+                             <text class="price-red">¥{{item.price}}</text>
+                             <view class="trash-icon" bindtap="removeFromCart" data-index="{{index}}">
+                               <image src="{{icons.trash}}" class="icon-sm"></image>
+                             </view>
+                           </view>
+                        </view>
+                     </view>
+                  </block>
+              </view>
+              <view class="p-3 border-t bg-gray-50 flex-between" bindtap="openCouponSelector">
+                  <text class="text-sm font-bold">优惠券</text>
+                  <view class="flex-center">
+                      <text class="text-red text-sm mr-1">
+                        {{selectedCoupon ? '-¥'+selectedCoupon.val : (myCoupons.length > 0 ? '有可用优惠券' : '无可用')}}
+                      </text>
+                      <image src="{{icons.chevron_right}}" class="icon-xs opacity-50"></image>
+                  </view>
+              </view>
+           </block>
+        </scroll-view>
+        <view class="sheet-foot border-t">
+           <view class="flex-between mb-2">
+             <text class="text-gray text-sm">商品总额</text>
+             <text class="font-bold">¥{{totalPrice}}</text>
+           </view>
+           <view class="flex-between mb-2">
+             <text class="text-gray text-sm">所需押金</text>
+             <text class="font-bold text-orange">¥{{totalDeposit}}</text>
+           </view>
+           <view wx:if="{{selectedCoupon}}" class="flex-between mb-2">
+             <text class="text-gray text-sm">优惠抵扣</text>
+             <text class="font-bold text-red">-¥{{selectedCoupon.val}}</text>
+           </view>
+           <view class="flex-between mb-4 border-t pt-2">
+             <text class="font-bold text-lg">实付金额</text>
+             <text class="price-red text-xl">¥{{finalPrice}}</text>
+           </view>
+           <button class="btn-full {{cartItems.length===0?'disabled':''}}" bindtap="checkout">立即支付</button>
+        </view>
+     </view>
+  </view>
+
+  <!-- 2. 商品详情弹窗 -->
+  <view wx:if="{{showDetailModal}}" class="modal-mask fade-in" bindtap="closeDetail">
+      <view class="bottom-sheet h-80vh slide-up" catchtap="dummy">
+          <image src="{{currentItem.imageUrl}}" mode="aspectFill" class="detail-hero-img"></image>
+          <view class="p-4 flex-1">
+              <view class="flex-between items-start mb-2">
+                  <text class="title-xl">{{currentItem.title || currentItem.name}}</text>
+                  <view class="text-red font-bold text-xl">
+                    ¥{{currentItem.price}}
+                    <text class="text-gray text-xs font-normal">{{currentItem.unit||''}}</text>
+                  </view>
+              </view>
+              <view class="flex gap-2 mb-4">
+                  <block wx:for="{{currentItem.tags}}" wx:key="*this">
+                    <text class="detail-tag">{{item}}</text>
+                  </block>
+                  <text wx:if="{{currentItem.deposit}}" class="detail-tag green">{{currentItem.deposit}}</text>
+                  <!-- ✅ 服装租借显示“租金100” -->
+                  <text wx:if="{{currentItem.rentInfo}}" class="detail-tag">{{currentItem.rentInfo}}</text>
+              </view>
+              <view class="text-gray text-sm leading-relaxed mb-6">
+                {{currentItem.description || '暂无详细描述，请咨询客服。'}}
+              </view>
+          </view>
+          <view class="sheet-foot border-t flex-between">
+               <view class="fav-btn" bindtap="toggleFavorite">
+                   <image src="{{isCurrentFav ? icons.heart_fill : icons.heart}}" class="icon-md"></image>
+                   <text class="text-xs mt-1">{{isCurrentFav ? '已收藏' : '收藏'}}</text>
+               </view>
+               <!-- ✅ 合并为一个按钮：预约时间并加入购物车，大小恢复原来那种 -->
+               <button class="btn-full flex-1 ml-4" bindtap="openBookingFromDetail">
+                 预约时间并加入购物车
+               </button>
+          </view>
+      </view>
+  </view>
+
+  <!-- 2.5 预约时间弹窗 -->
+  <view wx:if="{{showBookingModal}}" class="modal-mask fade-in" bindtap="closeBookingModal">
+      <view class="center-modal slide-up" catchtap="dummy">
+          <view class="sheet-head border-b">
+              <text class="title-lg">选择预约时间
+              </text>
+              <view class="close-btn" bindtap="closeBookingModal">
+                  <image src="{{icons.x_gray}}" class="icon-md"></image>
+              </view>
+          </view>
+
+          <view class="p-4">
+              <view class="input-label">预约日期</view>
+              <picker mode="date" value="{{bookingDate}}" bindchange="onBookingDateChange">
+                  <view class="picker-field">
+                      <text wx:if="{{bookingDate}}">{{bookingDate}}</text>
+                      <text wx:else class="text-gray">请选择日期</text>
+                  </view>
+              </picker>
+
+              <view class="input-label mt-4">时间段</view>
+              <view class="slot-row">
+                  <block wx:for="{{bookingSlots}}" wx:key="*this">
+                      <view
+                        class="slot-pill btn-pill {{bookingSlot == item ? 'active' : ''}}"
+                        bindtap="selectBookingSlot"
+                        data-slot="{{item}}"
+                      >
+                          <text>{{item}}</text>
+                          <image
+                            wx:if="{{bookingSlot == item}}"
+                            src="{{icons.check}}"
+                            class="icon-xs ml-1"
+                          ></image>
+                      </view>
+                  </block>
+              </view>
+
+              <view class="input-label mt-4">备注（可选）</view>
+              <textarea
+                class="input-area"
+                placeholder="如想拍的场景、人数、妆容偏好等"
+                value="{{bookingRemark}}"
+                bindinput="onBookingRemarkInput"
+              />
+
+              <button class="btn-full mt-6" bindtap="confirmBooking">
+                  确认预约并加入购物车
+              </button>
+          </view>
+      </view>
+  </view>
+
+  <!-- 3. 领券中心弹窗 -->
+  <view wx:if="{{showCouponModal}}" class="modal-mask fade-in" bindtap="closeCouponCenter">
+      <view class="center-modal slide-up" catchtap="dummy">
+          <view class="sheet-head border-b">
+            <text class="title-lg">领券中心</text>
+            <view class="close-btn" bindtap="closeCouponCenter">
+              <image src="{{icons.x_gray}}" class="icon-md"></image>
+            </view>
+          </view>
+          <scroll-view scroll-y class="modal-list-body p-4 bg-gray-50">
+              <block wx:for="{{availableCoupons}}" wx:key="id">
+                  <view class="coupon-card">
+                      <view class="coupon-left">
+                        <text class="c-val">¥{{item.val}}</text>
+                        <text class="c-cond">满{{item.min}}可用</text>
+                      </view>
+                      <view class="coupon-right">
+                        <text class="c-title">{{item.title}}</text>
+                        <button class="btn-xs {{item.claimed?'claimed':''}}" bindtap="claimCoupon" data-id="{{item.id}}">
+                          {{item.claimed?'已领取':'立即领取'}}
+                        </button>
+                      </view>
+                  </view>
+              </block>
+          </scroll-view>
+      </view>
+  </view>
+
+  <!-- 4. 我的优惠券弹窗 -->
+  <view wx:if="{{showMyCouponsModal}}" class="modal-mask fade-in" bindtap="closeMyCoupons">
+      <view class="bottom-sheet h-60vh slide-up" catchtap="dummy">
+          <view class="sheet-head border-b">
+            <text class="title-lg">我的优惠券</text>
+            <view class="close-btn" bindtap="closeMyCoupons">
+              <image src="{{icons.x_gray}}" class="icon-md"></image>
+            </view>
+          </view>
+          <scroll-view scroll-y class="sheet-body p-4 bg-gray-50">
+              <block wx:if="{{myCoupons.length===0}}">
+                <view class="empty-state"><text class="text-gray">暂无可用优惠券</text></view>
+              </block>
+              <block wx:else>
+                  <block wx:for="{{myCoupons}}" wx:key="id">
+                      <!-- 在购物车里打开：可点击使用 -->
+                      <block wx:if="{{isCartOpen}}">
+                        <view class="coupon-card" bindtap="selectCouponForCart" data-coupon="{{item}}">
+                            <view class="coupon-left">
+                              <text class="c-val">¥{{item.val}}</text>
+                              <text class="c-cond">满{{item.min}}可用</text>
+                            </view>
+                            <view class="coupon-right">
+                              <text class="c-title">{{item.title}}</text>
+                              <text class="text-xs text-blue">点击使用</text>
+                            </view>
+                        </view>
+                      </block>
+                      <!-- 在“我的”里打开：只展示，不可点击 -->
+                      <block wx:else>
+                        <view class="coupon-card">
+                            <view class="coupon-left">
+                              <text class="c-val">¥{{item.val}}</text>
+                              <text class="c-cond">满{{item.min}}可用</text>
+                            </view>
+                            <view class="coupon-right">
+                              <text class="c-title">{{item.title}}</text>
+                            </view>
+                        </view>
+                      </block>
+                  </block>
+              </block>
+          </scroll-view>
+      </view>
+  </view>
+
+  <!-- 5. 钱包充值弹窗 -->
+  <view wx:if="{{showWalletModal}}" class="modal-mask fade-in" bindtap="closeWallet">
+      <view class="center-modal slide-up" catchtap="dummy">
+          <view class="sheet-head border-b">
+            <text class="title-lg">我的钱包</text>
+            <view class="close-btn" bindtap="closeWallet">
+              <image src="{{icons.x_gray}}" class="icon-md"></image>
+            </view>
+          </view>
+          <view class="p-6 text-center">
+              <text class="text-gray text-sm block mb-2">当前余额</text>
+              <text class="font-bold text-3xl block mb-6">¥{{balance}}</text>
+              <view class="grid-3 gap-2 mb-4">
+                  <view class="charge-btn" bindtap="quickRecharge" data-val="50">¥50</view>
+                  <view class="charge-btn" bindtap="quickRecharge" data-val="100">¥100</view>
+                  <view class="charge-btn" bindtap="quickRecharge" data-val="200">¥200</view>
+              </view>
+              <button class="btn-full" bindtap="closeWallet">充值 (模拟)</button>
+          </view>
+      </view>
+  </view>
+
+  <!-- 6. 关于我们弹窗 -->
+  <view wx:if="{{showAboutModal}}" class="modal-mask fade-in" bindtap="closeAbout">
+      <view class="center-modal slide-up p-6 text-center" catchtap="dummy">
+          <view class="w-16 h-16 bg-blue rounded-full mx-auto mb-4 flex-center">
+            <image src="{{icons.camera_logo}}" class="icon-lg"></image>
+          </view>
+          <text class="title-lg block mb-2">影动云山</text>
+          <text class="text-gray text-xs block mb-4">Version 1.0.2</text>
+          <view class="text-left text-sm text-gray space-y-2 mb-6">
+              <view>专注校园摄影服务，记录美好青春。</view>
+              <view>提供证件照、毕业照、活动跟拍及专业器材租赁服务。</view>
+          </view>
+          <button class="btn-full" bindtap="closeAbout">关闭</button>
+      </view>
+  </view>
+
+  <!-- 7. 登录弹窗 -->
+  <view wx:if="{{showLogin}}" class="modal-mask fade-in" bindtap="closeLoginModal">
+      <view class="center-modal slide-up p-6 text-center" catchtap="dummy">
+         <view class="logo-box-lg mx-auto mb-4 bg-blue-500">
+            <image src="{{icons.camera_logo}}" class="icon-lg"></image>
+         </view>
+         <text class="title-lg block mb-2">欢迎来到影动云山</text>
+         <text class="text-gray text-sm block mb-6">授权获取微信头像以登录</text>
+         <button class="btn-full bg-green-500 mb-3 flex-center justify-center" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+            <image src="{{icons.user_active}}" class="icon-sm mr-2 filter-white"></image>
+            <text>微信一键登录</text>
+         </button>
+         <button class="text-gray text-sm mt-2" bindtap="closeLoginModal">暂不登录</button>
+      </view>
+  </view>
+
+  <!-- 个人资料完善弹窗 -->
+  <view wx:if="{{showProfileModal}}" class="modal-mask fade-in" bindtap="closeProfileModal">
+     <view class="center-modal slide-up" catchtap="dummy">
+        <view class="sheet-head border-b">
+           <text class="title-lg">完善个人信息</text>
+           <view class="close-btn" bindtap="closeProfileModal">
+              <image src="{{icons.x_gray}}" class="icon-md"></image>
+           </view>
+        </view>
+        <view class="p-4">
+           <view class="input-label">学号</view>
+           <input class="input-area" style="width: 100%;" placeholder="请输入学号" value="{{profile.studentId}}" data-field="studentId" bindinput="onProfileInput" />
+           <view class="input-label mt-4">姓名</view>
+           <input class="input-area" placeholder="请输入姓名" value="{{profile.name}}" data-field="name" bindinput="onProfileInput" />
+           <view class="input-label mt-4">学院</view>
+           <input class="input-area" placeholder="请输入学院" value="{{profile.college}}" data-field="college" bindinput="onProfileInput" />
+           <button class="btn-full mt-6" bindtap="saveProfile">保存信息</button>
+        </view>
+     </view>
+  </view>
+
+  <!-- 其他弹窗 -->
+  <view wx:if="{{showAddressModal}}" class="modal-mask fade-in" bindtap="closeAddressModal">
+    <view class="center-modal slide-up" catchtap="dummy">
+      <view class="sheet-head border-b">
+        <text class="title-lg">编辑地址</text>
+        <view class="close-btn" bindtap="closeAddressModal">
+          <image src="{{icons.x_gray}}" class="icon-md"></image>
+        </view>
+      </view>
+      <view class="p-4">
+        <view class="input-label">详细地址</view>
+        <textarea class="input-area" placeholder="请输入宿舍号" value="{{tempAddress}}" bindinput="onAddressInput" />
+        <button class="btn-full mt-6" bindtap="saveAddress">保存</button>
+      </view>
+    </view>
+  </view>
+  
+  <view wx:if="{{showSettings}}" class="modal-mask fade-in" bindtap="closeSettings">
+     <view class="center-modal slide-up" catchtap="dummy">
+        <view class="sheet-head border-b">
+          <text class="title-lg">应用设置</text>
+          <view class="close-btn" bindtap="closeSettings">
+            <image src="{{icons.x_gray}}" class="icon-md"></image>
+          </view>
+        </view>
+        <view class="p-4">
+            <view class="set-item">
+              <text>消息通知</text>
+              <image src="{{icons.chevron_right}}" class="icon-xs opacity-30"></image>
+            </view>
+            <view class="set-item">
+              <text>检查更新</text>
+              <text class="text-xs text-gray">v1.0.2</text>
+            </view>
+            <button class="mt-6 w-full bg-gray-50 text-gray font-bold py-3 rounded-lg text-sm" bindtap="logout">退出登录</button>
+        </view>
+     </view>
+  </view>
+
+  <view wx:if="{{showCSModal}}" class="modal-mask fade-in" bindtap="closeCSModal">
+    <view class="center-modal slide-up" catchtap="dummy">
+      <view class="sheet-head border-b">
+        <text class="title-lg">联系客服</text>
+        <view class="close-btn" bindtap="closeCSModal">
+          <image src="{{icons.x_gray}}" class="icon-md"></image>
+        </view>
+      </view>
+      <view class="p-4 text-center">
+        <view class="mb-4">
+          <text class="text-gray text-sm block mb-1">客服电话</text>
+          <text class="text-blue font-bold text-xl" bindtap="makePhoneCall">0898-1412</text>
+        </view>
+        <view class="mb-6">
+          <text class="text-gray text-sm block mb-1">工作时间</text>
+          <text class="font-bold">09:00 - 17:00</text>
+        </view>
+        <button class="btn-full" bindtap="closeCSModal">我知道了</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showGallery}}" class="gallery-mask fade-in">
+    <view class="gallery-nav" style="top:{{statusBarHeight}}px">
+      <view class="back-pill" bindtap="closeGallery">
+        <image src="{{icons.chevron_left_white}}" class="icon-sm"></image>
+        <text>返回主页</text>
+      </view>
+    </view>
+    <swiper class="gallery-swiper" indicator-dots>
+      <block wx:for="{{galleryImages}}" wx:key="*this">
+        <swiper-item class="flex-center bg-black">
+          <image src="{{item}}" mode="widthFix" class="gallery-img"></image>
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
+
+  <view wx:if="{{showHelpModal}}" class="modal-mask fade-in" bindtap="closeHelpCenter">
+    <view class="center-modal slide-up" catchtap="dummy">
+      <view class="sheet-head border-b">
+        <text class="title-lg">帮助中心</text>
+        <view class="close-btn" bindtap="closeHelpCenter">
+          <image src="{{icons.x_gray}}" class="icon-md"></image>
+        </view>
+      </view>
+      <scroll-view scroll-y class="modal-list-body p-4">
+        <block wx:for="{{faqs}}" wx:key="q">
+          <view class="faq-item">
+            <view class="faq-q" bindtap="toggleFaq" data-idx="{{index}}">
+              <text class="font-bold text-sm">{{item.q}}</text>
+              <image src="{{icons.chevron_right}}" class="icon-xs transition {{item.open?'rotate-90':''}}"></image>
+            </view>
+            <view wx:if="{{item.open}}" class="faq-a">
+              <text class="text-gray text-xs">{{item.a}}</text>
+            </view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{showFavModal}}" class="modal-mask fade-in" bindtap="closeFavorites">
+    <view class="bottom-sheet h-80vh slide-up" catchtap="dummy">
+      <view class="sheet-head border-b">
+        <text class="title-lg">我的收藏</text>
+        <view class="close-btn" bindtap="closeFavorites">
+          <image src="{{icons.x_gray}}" class="icon-md"></image>
+        </view>
+      </view>
+      <scroll-view scroll-y class="sheet-body p-4">
+        <block wx:if="{{favItems.length===0}}">
+          <view class="empty-state h-48"><text class="text-gray">暂无收藏</text></view>
+        </block>
+        <view class="grid-2">
+          <block wx:for="{{favItems}}" wx:key="id">
+            <template is="card" data="{{item, icons}}"/>
+          </block>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{showOrderModal}}" class="modal-mask fade-in" bindtap="closeOrderList">
+    <view class="center-modal slide-up" catchtap="dummy">
+      <view class="sheet-head border-b">
+        <text class="title-lg">我的订单</text>
+        <view class="close-btn" bindtap="closeOrderList">
+          <image src="{{icons.x_gray}}" class="icon-md"></image>
+        </view>
+      </view>
+      <view class="filter-tabs border-b">
+        <view class="f-tab {{!orderFilter || orderFilter==='all'?'active':''}}" bindtap="setOrderFilter" data-filter="all">全部</view>
+        <view class="f-tab {{orderFilter==='待付款'?'active':''}}" bindtap="setOrderFilter" data-filter="待付款">待付款</view>
+        <view class="f-tab {{orderFilter==='进行中'?'active':''}}" bindtap="setOrderFilter" data-filter="进行中">进行中</view>
+      </view>
+      <scroll-view scroll-y class="modal-list-body">
+        <block wx:if="{{filteredOrders.length === 0}}">
+          <view class="empty-state h-48">
+            <image src="{{icons.empty}}" class="icon-xl opacity-20 mb-2"></image>
+            <text class="text-gray">暂无相关订单</text>
+          </view>
+        </block>
+        <block wx:else>
+          <block wx:for="{{filteredOrders}}" wx:key="id">
+            <view class="order-card">
+              <view class="flex-between mb-2 pb-2 border-b-dash">
+                <text class="text-xs text-gray">{{item.date}}</text>
+                <text class="status-tag {{item.statusColor}}">{{item.status}}</text>
+              </view>
+              <block wx:for="{{item.items}}" wx:for-item="sub" wx:key="*this">
+                <view class="flex mb-2">
+                  <image src="{{sub.imageUrl}}" mode="aspectFill" class="order-thumb"></image>
+                  <view class="ml-3">
+                    <text class="item-title">{{sub.title || sub.name}}</text>
+                    <text class="item-desc">¥{{sub.price}}</text>
+                    <!-- ✅ 在订单里展示预约日期 / 时间段 / 备注（兼容旧订单） -->
+                    <block wx:if="{{sub.booking}}">
+                      <text class="item-desc">
+                        预约：{{sub.booking.date}} {{sub.booking.slot}}
+                      </text>
+                      <text wx:if="{{sub.booking.remark}}" class="item-desc">
+                        备注：{{sub.booking.remark}}
+                      </text>
+                    </block>
+                  </view>
+                </view>
+              </block>
+              <view class="flex-between mt-2 pt-2 border-t-dash">
+                <text class="text-xs text-gray">共 {{item.items.length}} 件</text>
+                <view class="flex-center gap-2">
+                  <text class="text-sm font-bold">实付 ¥{{item.total}}</text>
+                  <button wx:if="{{item.status==='进行中'}}" class="btn-xs-outline" catchtap="requestRefund" data-id="{{item.id}}">
+                    申请退款
+                  </button>
+                </view>
+              </view>
+            </view>
+          </block>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{toast.visible}}" class="toast fade-in">{{toast.message}}</view>
+</view>
+
+<template name="card">
+   <view class="card shadow-sm" bindtap="openDetail" data-item="{{item}}">
+      <view class="card-top">
+        <image src="{{item.imageUrl}}" mode="aspectFill" class="cover-img"></image>
+        <view wx:if="{{item.tags}}" class="tag-row">
+          <block wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">
+            <text class="tag">{{tag}}</text>
+          </block>
+        </view>
+      </view>
+      <view class="card-bot">
+        <text class="c-title">{{item.title || item.name}}</text>
+        <text class="c-desc">{{item.description || item.category}}</text>
+        <view class="flex-between items-end">
+          <view class="flex-base">
+            <text class="text-red font-bold text-xs">¥</text>
+            <text class="text-red font-bold text-lg">{{item.price}}</text>
+            <text wx:if="{{item.unit}}" class="text-gray text-xs ml-1">{{item.unit}}</text>
+          </view>
+          <!-- ✅ 这里改成打开预约弹窗，而不是直接加购物车 -->
+          <view class="add-btn" catchtap="openBookingFromDetail" data-item="{{item}}">
+            <image src="{{icons.plus}}" class="icon-sm"></image>
+          </view>
+        </view>
+      </view>
+   </view>
+</template>
+
+
+<template name="rental-row">
+   <view class="rental-box shadow-sm" bindtap="openDetail" data-item="{{item}}">
+      <image src="{{item.imageUrl}}" mode="aspectFill" class="r-img"></image>
+      <view class="r-info">
+        <view>
+          <text class="c-title">{{item.name}}</text>
+          <view class="flex mt-1">
+            <!-- 押金 / 租金100 -->
+            <text wx:if="{{item.deposit}}" class="mini-tag green">{{item.deposit}}</text>
+            <text wx:if="{{item.rentInfo}}" class="mini-tag green">{{item.rentInfo}}</text>
+            <text class="mini-tag gray">库存: {{item.stock}}</text>
+          </view>
+        </view>
+        <view class="flex-between items-end">
+          <view class="flex-base">
+            <text class="text-red font-bold text-xs">¥</text>
+            <text class="text-red font-bold text-lg">{{item.price}}</text>
+            <text class="text-gray text-xs ml-1">{{item.unit}}</text>
+          </view>
+          <view class="rent-btn">租借</view>
+        </view>
+      </view>
+   </view>
+</template>
+
+<template name="menu-item">
+   <view class="menu-item border-b-light" bindtap="{{action || ''}}" data-msg="{{msg}}">
+      <view class="flex-center" style="width:100%">
+        <image src="{{icon}}" class="icon-sm mr-3"></image>
+        <text class="menu-text">{{label}}</text>
+        <view style="flex:1"></view>
+        <text wx:if="{{val}}" class="text-gray text-xs mr-2 max-w-200 ellipsis">{{val}}</text>
+        <image src="{{arrow}}" class="icon-xs opacity-30"></image>
+      </view>
+   </view>
+</template>
