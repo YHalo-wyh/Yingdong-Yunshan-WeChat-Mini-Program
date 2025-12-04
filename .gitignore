@@ -1,0 +1,38 @@
+# === WeChat Mini Program 项目通用忽略 ===
+
+# 微信开发者工具生成 / 本地配置
+project.private.config.json
+pack_nwx/
+*.wxvpkg
+
+# 编译输出 / 构建目录（如果你后面用到构建工具，可以保留这些）
+dist/
+build/
+release/
+temp/
+tmp/
+
+# 小程序 npm 构建产物
+miniprogram_npm/
+plugin/
+plugin_npm/
+
+# 依赖包
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE & 编辑器
+.vscode/
+.idea/
+*.iml
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 其他临时文件
+*.log
+*.swp
+*.swo
