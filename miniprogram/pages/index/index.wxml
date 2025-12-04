@@ -360,7 +360,6 @@
                     <text class="detail-tag">{{item}}</text>
                   </block>
                   <text wx:if="{{currentItem.deposit}}" class="detail-tag green">{{currentItem.deposit}}</text>
-                  <!-- ✅ 服装租借显示“租金100” -->
                   <text wx:if="{{currentItem.rentInfo}}" class="detail-tag">{{currentItem.rentInfo}}</text>
               </view>
               <view class="text-gray text-sm leading-relaxed mb-6">
@@ -372,7 +371,7 @@
                    <image src="{{isCurrentFav ? icons.heart_fill : icons.heart}}" class="icon-md"></image>
                    <text class="text-xs mt-1">{{isCurrentFav ? '已收藏' : '收藏'}}</text>
                </view>
-               <!-- ✅ 合并为一个按钮：预约时间并加入购物车，大小恢复原来那种 -->
+               <!--  合并为一个按钮：预约时间并加入购物车，大小恢复原来那种 -->
                <button class="btn-full flex-1 ml-4" bindtap="openBookingFromDetail">
                  预约时间并加入购物车
                </button>
@@ -737,7 +736,7 @@
                   <view class="ml-3">
                     <text class="item-title">{{sub.title || sub.name}}</text>
                     <text class="item-desc">¥{{sub.price}}</text>
-                    <!-- ✅ 在订单里展示预约日期 / 时间段 / 备注（兼容旧订单） -->
+                    <!--  在订单里展示预约日期 / 时间段 / 备注（兼容旧订单） -->
                     <block wx:if="{{sub.booking}}">
                       <text class="item-desc">
                         预约：{{sub.booking.date}} {{sub.booking.slot}}
